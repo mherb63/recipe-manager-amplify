@@ -4,7 +4,9 @@ import { onMounted, ref } from 'vue'
 import type { Schema } from '../../amplify/data/resource'
 import { generateClient } from 'aws-amplify/data'
 import { auth } from '@aws-amplify/auth'
+import { getCurrentUser } from 'aws-amplify/auth'
 
+const currentUser = ref()
 const client = generateClient<Schema>()
 
 // create a reactive reference to the array of todos
@@ -34,8 +36,8 @@ function deleteTodo(id: string) {
 
 // fetch todos when the component is mounted
 onMounted(async () => {
-  const user = await Auth.currentAuthenticatedUser()
-  console.log(`user: ${JSON.stringify(user)}`)
+  currentUser.value = await getCurrentUser()
+  console.log(`user: ${JSON.stringify(currentUser.value)}`)
   listTodos()
 })
 </script>
