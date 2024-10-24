@@ -18,7 +18,7 @@
 <script lang="ts" setup>
 import '@/assets/main.css'
 import { ref, onMounted } from 'vue'
-import { Schema } from '../../amplify/data/resource'
+import type { Schema } from '../../amplify/data/resource'
 import { generateClient } from 'aws-amplify/data'
 import { getCurrentUser } from 'aws-amplify/auth'
 import { uploadData } from 'aws-amplify/storage'
