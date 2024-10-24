@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import '@/assets/main.css'
 import { onMounted, ref } from 'vue'
 import type { Schema } from '../../amplify/data/resource'
@@ -41,15 +41,10 @@ onMounted(async () => {
   listTodos()
 })
 
-const handleFileUpload = async (event: Event) => {
-  const target = event.target as HTMLInputElement
-  if (target.files && target.files.length > 0) {
-    const file = target.files[0]
-  }
-
+const handleFileUpload = async (event) => {
   const result = await uploadData({
     path: 'recipe-manager/images/' + event.target.files[0].name,
-    data: file,
+    data: event.target.files[0],
     options: {
       bucket: 'recipe-manager-bucket',
     },
