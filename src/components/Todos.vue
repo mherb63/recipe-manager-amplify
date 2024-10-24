@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 import type { Schema } from '../../amplify/data/resource'
 import { generateClient } from 'aws-amplify/data'
 import { getCurrentUser } from 'aws-amplify/auth'
+import { uploadData } from 'aws-amplify/storage'
 
 const currentUser = ref()
 const client = generateClient<Schema>()
@@ -39,6 +40,20 @@ onMounted(async () => {
   console.log(`user: ${JSON.stringify(currentUser.value)}`)
   listTodos()
 })
+
+const handleFileUpload = async (event) => {
+  const result = await uploadData({
+    path: 'recipe-manager/' + event.target.files[0].name,
+    data: event.target.files[0],
+    options: {
+      bucket: {
+        bucketName: 'recipe-manager-bucket',
+      },
+    },
+  }).result
+
+  console.log(`upload file: ${JSON.stringify(event.target.files[0].name)}`)
+}
 </script>
 
 <template>
@@ -59,5 +74,6 @@ onMounted(async () => {
         Review next steps of this tutorial.
       </a>
     </div>
+    <div><input type="file" @change="handleFileUpload" /></div>
   </main>
 </template>
