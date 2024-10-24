@@ -41,14 +41,15 @@ onMounted(async () => {
   listTodos()
 })
 
-const handleFileUpload = async (event) => {
+const handleFileUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (target.files && target.files.length > 0) {
+    const file = target.files[0]
+  }
+
   const result = await uploadData({
-    path:
-      'recipe-manager/images/' +
-      currentUser.value.userId +
-      '_' +
-      event.target.files[0].name,
-    data: event.target.files[0],
+    path: 'recipe-manager/images/' + event.target.files[0].name,
+    data: file,
     options: {
       bucket: 'recipe-manager-bucket',
     },
