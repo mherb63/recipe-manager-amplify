@@ -43,12 +43,14 @@ onMounted(async () => {
 
 const handleFileUpload = async (event) => {
   const result = await uploadData({
-    path: 'recipe-manager/' + event.target.files[0].name,
+    path:
+      'recipe-manager/images/' +
+      currentUser.value.userId +
+      '_' +
+      event.target.files[0].name,
     data: event.target.files[0],
     options: {
-      bucket: {
-        bucketName: 'recipe-manager-bucket',
-      },
+      bucket: 'recipe-manager-bucket',
     },
   }).result
 
