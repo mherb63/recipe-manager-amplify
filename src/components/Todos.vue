@@ -3,6 +3,7 @@ import '@/assets/main.css'
 import { onMounted, ref } from 'vue'
 import type { Schema } from '../../amplify/data/resource'
 import { generateClient } from 'aws-amplify/data'
+import { auth } from '@aws-amplify/auth'
 
 const client = generateClient<Schema>()
 
@@ -32,7 +33,9 @@ function deleteTodo(id: string) {
 }
 
 // fetch todos when the component is mounted
-onMounted(() => {
+onMounted(async () => {
+  const user = await Auth.currentAuthenticatedUser()
+  console.log(`user: ${JSON.stringify(user)}`)
   listTodos()
 })
 </script>
