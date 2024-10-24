@@ -7,7 +7,7 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  Recipe: a
+  Todo: a
     .model({
       content: a.string(),
       createdOn: a.datetime(),
