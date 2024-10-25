@@ -17,7 +17,7 @@
 
 <script lang="ts" setup>
 import '@/assets/main.css'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import type { Schema } from '../../amplify/data/resource'
 import { generateClient } from 'aws-amplify/data'
 import { getCurrentUser } from 'aws-amplify/auth'
@@ -30,7 +30,11 @@ const todos = ref<Array<Schema['Todo']['type']>>([])
 // Create client instance with generics
 const client = generateClient<Schema>()
 
-// Fetch and observe todos
+// subscription
+const createSub = ref()
+const updateSub = ref()
+const deleteSub = ref()
+
 function listTodos() {
   client.models.Todo.observeQuery().subscribe({
     next: ({ items, isSynced }) => {
@@ -39,7 +43,6 @@ function listTodos() {
   })
 }
 
-// Create a new todo
 function createTodo() {
   const content = window.prompt('Todo content')
   if (!content) return // Prevent creating empty todos
@@ -49,22 +52,19 @@ function createTodo() {
   })
 }
 
-// Delete a todo by id
 function deleteTodo(id: string) {
-  client.models.Todo.delete({ id }).then(() => {
-    listTodos() // Refresh todos after deletion
-  })
+  client.models.Todo.delete({ id })
 }
 
 // Handle file upload with TypeScript
-const handleFileUpload = async (event: Event) => {
+const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement
   if (target.files && target.files.length > 0) {
     const file = target.files[0]
     console.log(`Uploading file: ${file.name}`)
 
     try {
-      const result = await uploadData({
+      const result = uploadData({
         path: `recipe-manager/images/${file.name}`,
         data: file,
         options: {
@@ -86,9 +86,46 @@ onMounted(async () => {
   try {
     currentUser.value = await getCurrentUser()
     console.log(`User: ${JSON.stringify(currentUser.value)}`)
+
+    // real-time event subscription
+    createSub.value = client.models.Todo.onCreate().subscribe({
+      next: (data) => {
+        console.log(`create: ${JSON.stringify(data)}`)
+        const item = todos.value.find((x) => x.id === data.id)
+        if (!item) {
+          todos.value.push(data)
+        }
+      },
+      error: (error) => console.warn(error),
+    })
+
+    updateSub.value = client.models.Todo.onUpdate().subscribe({
+      next: (data) => {
+        console.log(`update: ${JSON.stringify(data)}`)
+        let item = todos.value.find((x) => x.id === data.id)
+        if (item) {
+          item = data
+        }
+      },
+      error: (error) => console.warn(error),
+    })
+    deleteSub.value = client.models.Todo.onDelete().subscribe({
+      next: (data) => {
+        console.log(`delete: ${JSON.stringify(data)}`)
+        const filtered = todos.value.filter((x) => x.id !== data.id)
+        todos.value = filtered
+      },
+      error: (error) => console.warn(error),
+    })
+
     listTodos()
   } catch (error) {
     console.error('Error fetching user or todos:', error)
   }
+})
+
+onUnmounted(() => {
+  updateSub.value.unsubscribe()
+  deleteSub.value.unsubscribe()
 })
 </script>
