@@ -21,12 +21,16 @@ const schema = a.schema({
     .authorization((allow) => [
       allow.authenticated(), // All authenticated users can read.
     ]),
-  Review: a.model({
-    reviewStars: a.integer(),
-    reviewText: a.string(),
-    todoId: a.string(), // Foreign key to reference Todo
-    todo: a.belongsTo('Todo', 'todoId'), // Define relationship back to Todo
-  }),
+  Review: a
+    .model({
+      reviewStars: a.integer(),
+      reviewText: a.string(),
+      todoId: a.string(), // Foreign key to reference Todo
+      todo: a.belongsTo('Todo', 'todoId'), // Define relationship back to Todo
+    })
+    .authorization((allow) => [
+      allow.authenticated(), // All authenticated users can read.
+    ]),
 })
 
 export type Schema = ClientSchema<typeof schema>
