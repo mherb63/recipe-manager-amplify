@@ -67,9 +67,10 @@ function createTodo() {
     content: content,
     owner: currentUser.value.signInDetails.loginId,
     createdBy: currentUser.value.username,
-  }).then(() => {
-    listTodos() // Refresh todos after creation
   })
+  // .then(() => {
+  //   listTodos() // Refresh todos after creation
+  // })
 
   //   client.models.Recipe.create({
   //     name: recipeName.value,
