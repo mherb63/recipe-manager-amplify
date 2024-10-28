@@ -25,6 +25,7 @@ const schema = a.schema({
     reviewStars: a.integer(),
     reviewText: a.string(),
     todoId: a.string(), // Foreign key to reference Todo
+    todo: a.belongsTo('Todo', 'todoId'), // Define relationship back to Todo
   }),
 })
 
