@@ -10,16 +10,14 @@ const schema = a.schema({
   Todo: a
     .model({
       content: a.string(),
-      owner: a
-        .string()
-        .authorization((allow) => [allow.owner().to(['update', 'delete'])]),
+      owner: a.string(),
       createdOn: a.datetime(),
       createdBy: a.string(),
       ingredients: a.string(),
       instructions: a.string(),
     })
     .authorization((allow) => [
-      allow.authenticated().to(['read']), // All authenticated users can read.
+      allow.authenticated(), // All authenticated users can read.
     ]),
 })
 
