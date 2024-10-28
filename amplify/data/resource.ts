@@ -19,7 +19,7 @@ const schema = a.schema({
       instructions: a.string(),
     })
     .authorization((allow) => [
-      allow.authenticated(), // All authenticated users can read.
+      allow.authenticated().to(['read']), // All authenticated users can read.
     ]),
 })
 
