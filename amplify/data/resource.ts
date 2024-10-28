@@ -16,10 +16,16 @@ const schema = a.schema({
       createdBy: a.string(),
       ingredients: a.string(),
       instructions: a.string(),
+      reviews: a.hasMany('Review', 'todoId'), // Define relationship to Review
     })
     .authorization((allow) => [
       allow.authenticated(), // All authenticated users can read.
     ]),
+  Review: a.model({
+    reviewStars: a.integer(),
+    reviewText: a.string(),
+    todoId: a.string(), // Foreign key to reference Todo
+  }),
 })
 
 export type Schema = ClientSchema<typeof schema>
