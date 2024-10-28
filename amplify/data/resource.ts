@@ -15,7 +15,10 @@ const schema = a.schema({
       ingredients: a.string(),
       instructions: a.string(),
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow) => [
+      allow.authenticated(), // All authenticated users can read.
+      allow.owner().to(['create', 'read', 'update', 'delete']),
+    ]),
 })
 
 export type Schema = ClientSchema<typeof schema>

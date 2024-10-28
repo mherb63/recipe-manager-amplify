@@ -12,6 +12,21 @@
       <br />
     </div>
     <div><input type="file" @change="handleFileUpload" /></div>
+    <div>
+      <button style="margin: 10px" @click="listFiles">Show Images</button>
+    </div>
+    <div>
+      <ul>
+        <li v-for="link in imageLinks">
+          <img
+            :src="link.url"
+            :alt="link.path"
+            style="width: 150px; height: auto"
+          />
+          <p>{{ link.path }}</p>
+        </li>
+      </ul>
+    </div>
   </main>
 </template>
 
@@ -21,11 +36,12 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import type { Schema } from '../../amplify/data/resource'
 import { generateClient } from 'aws-amplify/data'
 import { getCurrentUser } from 'aws-amplify/auth'
-import { uploadData } from 'aws-amplify/storage'
+import { uploadData, list, getUrl } from 'aws-amplify/storage'
 
 // Reactive state variables
 const currentUser = ref<any>(null) // or replace `any` with a proper user type
 const todos = ref<Array<Schema['Todo']['type']>>([])
+const imageLinks = ref()
 
 // Create client instance with generics
 const client = generateClient<Schema>()
@@ -81,6 +97,32 @@ const handleFileUpload = (event: Event) => {
   }
 }
 
+const listFiles = async () => {
+  const result = await list({
+    path: 'recipe-manager/images/',
+    // Alternatively, path: ({identityId}) => `album/{identityId}/photos/`,
+    options: {
+      bucket: 'recipe-manager-bucket',
+      listAll: true,
+    },
+  })
+
+  console.log(`recipe images: ${JSON.stringify(result)}`)
+  imageLinks.value = []
+  result.items.forEach(async (item) => {
+    const link = await getUrl({
+      path: item.path,
+      options: {
+        bucket: 'recipe-manager-bucket',
+        // url expiration time in seconds.
+        expiresIn: 300,
+      },
+    })
+    imageLinks.value.push({ url: link.url.toString(), path: link.url.pathname })
+    console.log(`temp url: ${link.url.toString()}`)
+  })
+}
+
 // Fetch user and todos on component mount
 onMounted(async () => {
   try {
@@ -93,6 +135,7 @@ onMounted(async () => {
         console.log(`create: ${JSON.stringify(data)}`)
         const item = todos.value.find((x) => x.id === data.id)
         if (!item) {
+          console.log(`creating new item in todo list with id ${data.id}`)
           todos.value.push(data)
         }
       },
