@@ -63,9 +63,18 @@ function createTodo() {
   const content = window.prompt('Todo content')
   if (!content) return // Prevent creating empty todos
 
-  client.models.Todo.create({ content }).then(() => {
+  client.models.Todo.create({
+    content: content,
+    owner: currentUser.value.signInDetails.loginId,
+    createdBy: currentUser.value.username,
+  }).then(() => {
     listTodos() // Refresh todos after creation
   })
+
+  //   client.models.Recipe.create({
+  //     name: recipeName.value,
+  //     description: recipeDescription.value,
+  //     createdBy: currentUser.value.signInDetails.loginId,
 }
 
 function deleteTodo(id: string) {

@@ -10,8 +10,9 @@ const schema = a.schema({
   Todo: a
     .model({
       content: a.string(),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
       owner: a.string(),
-      createdOn: a.datetime(),
       createdBy: a.string(),
       ingredients: a.string(),
       instructions: a.string(),
