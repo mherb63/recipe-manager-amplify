@@ -52,22 +52,22 @@ const updateSub = ref()
 const deleteSub = ref()
 
 async function listTodos() {
-  try {
-    const { data: items } = await client.models.Todo.list({
-      include: {
-        reviews: true, // Include reviews in the response
-      },
-    })
-    todos.value = items
-  } catch (error) {
-    console.error('Error fetching Todos with Reviews:', error)
+  // try {
+  //   const { data: items } = await client.models.Todo.list({
+  //     include: {
+  //       reviews: true, // Include reviews in the response
+  //     },
+  //   })
+  //   todos.value = items
+  // } catch (error) {
+  //   console.error('Error fetching Todos with Reviews:', error)
   }
 
-  // client.models.Todo.observeQuery().subscribe({
-  //   next: ({ items, isSynced }) => {
-  //     todos.value = items
-  //   },
-  //})
+  client.models.Todo.observeQuery().subscribe({
+    next: ({ items, isSynced }) => {
+      todos.value = items
+    },
+  })
 }
 
 function createTodo() {
